@@ -59,8 +59,13 @@ public class PlayerController : MonoBehaviour {
             rb.velocity += jumpVelocityToAdd;
         }
 
+        if (rb.velocity.y != 0)
+        {
+            print(rb.velocity.y);
+        }
+
         //animate jumping
-        bool isJumping = rb.velocity.y != 0;
+        bool isJumping = Mathf.Abs(rb.velocity.y) > 1;
         animator.SetBool("isJumping", isJumping);
     }
 
