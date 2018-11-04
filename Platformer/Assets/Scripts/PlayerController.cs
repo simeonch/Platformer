@@ -8,24 +8,31 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     float speed =  5f;
 
+    [SerializeField]
+    float jumpForce = 5f;
+
     //State
     bool isAlive = true;
 
     //Cached component references
     Rigidbody2D rb;
     Animator animator;
+    Collider2D collider;
 
     //Message then methods
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        collider = GetComponent<Collider2D>();
     }
 	
 	// Update is called once per frame
 	void Update () {
         Run();
         FlipSprite();
-	}
+        Jump(); 
+
+    }
 
     private void Run()
     {
@@ -33,8 +40,28 @@ public class PlayerController : MonoBehaviour {
         Vector2 velocity = new Vector2(controlThrow * speed, rb.velocity.y);
         rb.velocity = velocity;
 
-        bool isMovingHorizontally = Mathf.Abs(rb.velocity.x) > Mathf.Epsilon;
-        animator.SetBool("isRunning", isMovingHorizontally);
+        //animate running
+        bool isRunning = Mathf.Abs(rb.velocity.x) > Mathf.Epsilon;
+        animator.SetBool("isRunning", isRunning);
+    }
+
+    private void Jump()
+    {
+        //if ()
+        //{
+        //    return;
+        //}
+
+        if (collider.IsTouchingLayers(LayerMask.GetMask("Ground")) &&
+            CrossPlatformInputManager.GetButtonDown("Jump") )
+        {
+            Vector2 jumpVelocityToAdd = new Vector2(0f, jumpForce);
+            rb.velocity += jumpVelocityToAdd;
+        }
+
+        //animate jumping
+        bool isJumping = rb.velocity.y != 0;
+        animator.SetBool("isJumping", isJumping);
     }
 
     private void FlipSprite()
