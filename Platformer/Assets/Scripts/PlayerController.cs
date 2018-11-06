@@ -17,13 +17,16 @@ public class PlayerController : MonoBehaviour {
     //Cached component references
     Rigidbody2D rb;
     Animator animator;
-    Collider2D collider;
+    CapsuleCollider2D bodyCollider;
+    BoxCollider2D feet;
+
 
     //Message then methods
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        collider = GetComponent<Collider2D>();
+        bodyCollider = GetComponent<CapsuleCollider2D>();
+        feet = GetComponent<BoxCollider2D>();
     }
 	
 	// Update is called once per frame
@@ -52,7 +55,7 @@ public class PlayerController : MonoBehaviour {
         //    return;
         //}
 
-        if (collider.IsTouchingLayers(LayerMask.GetMask("Ground")) &&
+        if (feet.IsTouchingLayers(LayerMask.GetMask("Ground")) &&
             CrossPlatformInputManager.GetButtonDown("Jump") )
         {
             Vector2 jumpVelocityToAdd = new Vector2(0f, jumpForce);
