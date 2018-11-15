@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     float jumpForce = 5f;
 
+    [SerializeField]
+    Vector2 deathKick = new Vector2(2, 2);
+
     //State
     bool isAlive = true;
 
@@ -31,10 +34,15 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        if (!isAlive)
+        {
+            return;
+        }
+
         Run();
         FlipSprite();
-        Jump(); 
-
+        Jump();
+        Die();
     }
 
     private void Run()
@@ -70,6 +78,16 @@ public class PlayerController : MonoBehaviour {
         //animate jumping
         bool isJumping = Mathf.Abs(rb.velocity.y) > 1;
         animator.SetBool("isJumping", isJumping);
+    }
+
+    private void Die()
+    {
+        if (bodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemy")))
+        {
+            isAlive = false;
+            animator.SetTrigger("Die");
+            rb.velocity = deathKick;
+        }
     }
 
     private void FlipSprite()
