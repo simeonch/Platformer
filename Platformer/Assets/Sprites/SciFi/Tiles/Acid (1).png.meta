@@ -80,7 +80,21 @@ TextureImporter:
     serializedVersion: 2
     sprites: []
     outline: []
-    physicsShape: []
+    physicsShape:
+    - - {x: 67, y: 54}
+      - {x: 47, y: 53}
+      - {x: 32, y: 57}
+      - {x: 23, y: 56}
+      - {x: 1, y: 53}
+      - {x: -46, y: 53}
+      - {x: -74, y: 52}
+      - {x: -87, y: 58}
+      - {x: -101, y: 58}
+      - {x: -128, y: 49}
+      - {x: -128, y: -128}
+      - {x: 128, y: -128}
+      - {x: 128, y: 49}
+      - {x: 97, y: 52}
   spritePackingTag: 
   userData: 
   assetBundleName: 
