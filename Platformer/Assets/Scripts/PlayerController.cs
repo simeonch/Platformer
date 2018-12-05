@@ -87,6 +87,8 @@ public class PlayerController : MonoBehaviour {
             isAlive = false;
             animator.SetTrigger("Die");
             rb.velocity = deathKick;
+
+            FindObjectOfType<GameSession>().ProcessPlayerDeath();
         }
     }
 
