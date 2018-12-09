@@ -58,11 +58,6 @@ public class PlayerController : MonoBehaviour {
 
     private void Jump()
     {
-        //if ()
-        //{
-        //    return;
-        //}
-
         if (feet.IsTouchingLayers(LayerMask.GetMask("Ground")) &&
             CrossPlatformInputManager.GetButtonDown("Jump") )
         {
@@ -70,14 +65,9 @@ public class PlayerController : MonoBehaviour {
             rb.velocity += jumpVelocityToAdd;
         }
 
-        if (rb.velocity.y != 0)
-        {
-            print(rb.velocity.y);
-        }
-
         //animate jumping
-        bool isJumping = Mathf.Abs(rb.velocity.y) > 1;
-        animator.SetBool("isJumping", isJumping);
+        int verticalVelocity = (int)rb.velocity.y;
+        animator.SetInteger("VerticalVelocity", verticalVelocity);
     }
 
     private void Die()
