@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class TopCollision : MonoBehaviour {
 
-    private Rigidbody2D rb;
+    //private Rigidbody2D rb;
 
 	// Use this for initialization
 	void Start () {
-        rb = transform.parent.GetComponent<Rigidbody2D>();
+        //rb = transform.parent.GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
@@ -23,13 +23,12 @@ public class TopCollision : MonoBehaviour {
         //turn around if you collide with terrain, else kill player
         if (collision.collider.tag != "Player")
         {
-            //Debug.Log(collision.collider.name);
-            //transform.parent.localScale = new Vector2(-(Mathf.Sign(rb.velocity.x)), 1f);
             transform.parent.GetComponent<EnemyController>().ChangeDir();
         }
         else
         {
             collision.collider.gameObject.GetComponent<Player2>().Death();
+            transform.parent.GetComponent<Animator>().SetBool("isAttackingPlayer", true);
         }
     }
 }

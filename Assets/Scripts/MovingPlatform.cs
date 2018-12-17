@@ -13,12 +13,12 @@ public class MovingPlatform : MonoBehaviour {
     private Vector3 nextPoint;
 
     //private bool changeDir = false;
-    private Rigidbody2D rb;
+    //private Rigidbody2D rb;
     public int k = 0;
 
 	// Use this for initialization
 	void Start () {
-        rb = GetComponent<Rigidbody2D>();
+        //rb = GetComponent<Rigidbody2D>();
         nextPoint = points[k];
 	}
 	

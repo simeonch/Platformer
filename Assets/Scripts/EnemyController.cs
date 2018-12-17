@@ -67,8 +67,9 @@ public class EnemyController : MonoBehaviour {
     private void OnTriggerExit2D(Collider2D collision)
     {
         //compare tag
-        //only turn around if enemy isnt knockbacked, trigger exit is not a weapon, player or the player detection radius (finish)
-        if (!knockbacked && collision.tag != "weapon" && collision.tag != "Player" && collision.tag != "Finish")
+        //only turn around if enemy isnt knockbacked, trigger exit is not a weapon, player or the player detection radius + polymorph aim (finish)
+        Debug.Log("Exit");
+        if (!knockbacked && collision.tag != "weapon" && collision.tag != "Player" && collision.tag != "Finish" && collision.tag != "enemy")
         {
             ChangeDir();
         }
@@ -88,6 +89,7 @@ public class EnemyController : MonoBehaviour {
             dead = true;
             transform.position = point.transform.position;
             transform.GetChild(1).gameObject.SetActive(false);
+            transform.GetChild(2).gameObject.SetActive(false);
             transform.parent.GetComponent<EnemyContainer>().EnemyKilled();
 
 

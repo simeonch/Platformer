@@ -20,16 +20,21 @@ public class Player2 : MonoBehaviour
     private float PolyCastTime = 0;
     public float CastTime = 0;
     private bool isCasting = false;
-    private bool hadEnemy = false;
     public float Jetpack = 0;
     public float hookTime = 0;
     public int Ammo = 0;
     private GameObject PolymorphAimObject;
     private GameObject PlayerAimObject;
     private GameObject CastBar;
-    private float oldDir;
     private bool isStunned = false;
     private float StunTime;
+    public float StunDuration;
+    //private bool hadEnemy = false;
+    //private float oldDir;
+
+    public AudioClip BeamSound;
+    public AudioClip BlastSound;
+    public AudioClip JetSound;
 
     public Transform DeathPoint;
 
@@ -42,10 +47,9 @@ public class Player2 : MonoBehaviour
     Rigidbody2D rb;
     Animator animator;
 
-    //SpriteRenderer SR;
+    CapsuleCollider2D bodyCollider;     //using single collider for body and feet now
     //PolygonCollider2D bodyCollider;
     //CircleCollider2D duckCollider;
-    CapsuleCollider2D bodyCollider;
     //BoxCollider2D feet;
 
 
@@ -56,15 +60,14 @@ public class Player2 : MonoBehaviour
         animator = GetComponent<Animator>();
 
         bodyCollider = GetComponent<CapsuleCollider2D>();
+
         //feet = GetComponent<BoxCollider2D>();
         //duckCollider = GetComponent<CircleCollider2D>();
         //bodyCollider = GetComponent<PolygonCollider2D>();
-        //SR = GetComponent<SpriteRenderer>();
 
         PolymorphAimObject = transform.GetChild(0).gameObject;
         PlayerAimObject = transform.GetChild(1).gameObject;
         CastBar = transform.GetChild(2).gameObject;
-        oldDir = 1.0f;
     }
 
     public void PowerJetpack(int Fuel)
@@ -83,7 +86,8 @@ public class Player2 : MonoBehaviour
         animator.SetBool("isStunned", true);
         isStunned = true;
         StopCasting();
-        StunTime = 3.0f;
+        //StunTime = 3.0f;
+        StunTime = StunDuration;
         rb.velocity = Vector2.zero;
     }
 
@@ -124,7 +128,6 @@ public class Player2 : MonoBehaviour
             //default running state, not casting
             if (!isCasting)
             {
-                //PolymorphAimObject.SetActive(false);
                 //Hook();
                 FlyJetpack();
                 KnockBack();
@@ -144,7 +147,6 @@ public class Player2 : MonoBehaviour
             if (StunTime > 0)
             {
                 //Debug.Log("stunned");
-                //rb.velocity = Vector2.zero;
                 StunTime -= Time.deltaTime;
                 return;
             }
@@ -191,7 +193,7 @@ public class Player2 : MonoBehaviour
             animator.SetBool("isCasting", true);
             CastBar.SetActive(true);
             CastBar.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(PolyCastTime, 0.5f);
-            //CastBar.transform.GetChild(0).localScale = new Vector3(PolyCastTime, 0.8f, 1.0f);         //need to map polycasttime from 0 to 1 for this or get castbar into ui
+            //CastBar.transform.GetChild(0).localScale = new Vector3(PolyCastTime, 0.8f, 1.0f);         //need to map polycasttime from 0 to 1 for this and get castbar into ui
             PolyCastTime += Time.deltaTime;
         }
         if(PolyCastTime >= CastTime)
@@ -212,7 +214,7 @@ public class Player2 : MonoBehaviour
                     if(cols[i].tag == "polymorphed")
                     {
                         //rework
-                        //if it get's the enemy collider or the enemy polymorph child collider
+                        //if it gets the enemy collider or the enemy polymorph child collider
                         //Debug.Log("Perma poly: " + cols[i].name);
                         if (cols[i].GetComponent<Enemy2>() != null)
                         {
@@ -226,12 +228,7 @@ public class Player2 : MonoBehaviour
                     }
                 }
             }
-            PolyCastTime = 0;
-            isCasting = false;
-            PolymorphAimObject.SetActive(false);
-            PlayerAimObject.SetActive(true);
-            animator.SetBool("isCasting", false);
-            CastBar.SetActive(false);
+            StopCasting();
             return;
         }
     }
@@ -241,8 +238,6 @@ public class Player2 : MonoBehaviour
         float controlThrow = CrossPlatformInputManager.GetAxis("Horizontal"); // -1/1
         Vector2 velocity = new Vector2(controlThrow * speed, rb.velocity.y);
         rb.velocity = velocity;
-
-        oldDir = controlThrow;
 
         //animate running
         bool isRunning = Mathf.Abs(rb.velocity.x) > Mathf.Epsilon;
@@ -256,14 +251,17 @@ public class Player2 : MonoBehaviour
             RaycastHit2D beamHit = RayCastAtTarget(10.0f, LayerMask.GetMask("Enemy", "Ground"));
             if (beamHit.collider != null)
             {
-                animator.SetBool("isShooting", true);
+                //animator.SetBool("isShooting", true);
                 if (beamHit.collider.tag == "enemy")
                 {
-                    PlayerAimObject.SetActive(false);
-                    Debug.DrawLine(transform.position, beamHit.point, Color.red);
+                    animator.SetBool("isBeaming", true);
                     beamHit.collider.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+                    PlayerAimObject.SetActive(false);
+                    Debug.DrawLine(transform.position, beamHit.point, Color.cyan);
                     beamHit.collider.gameObject.transform.position = Vector2.Lerp(beamHit.collider.gameObject.transform.position, transform.position, 1.0f * Time.deltaTime);
                 }
+                ////hook:
                 //else
                 //{
                 //    if (hookTime < 0.3)
@@ -280,7 +278,10 @@ public class Player2 : MonoBehaviour
         {
             hookTime = 0;
             PlayerAimObject.SetActive(true);
-            animator.SetBool("isShooting", false);
+            //animator.SetBool("isShooting", false);
+            animator.SetBool("isBeaming", false);
+
+            //AudioSource.stop
         }
     }
 
@@ -294,9 +295,11 @@ public class Player2 : MonoBehaviour
                 if(Vector2.Distance(transform.position, knockHit.point) < 2f)
                 {
                     animator.SetBool("isShooting", true);
-                    Debug.DrawLine(transform.position, knockHit.point, Color.green);
+                    //Debug.DrawLine(transform.position, knockHit.point, Color.red);
+                    //AS.PlayOneShot(BlastSound);
+
                     //knockback to right or left
-                    if(transform.position.x < knockHit.point.x)
+                    if (transform.position.x < knockHit.point.x)
                     {
                         knockHit.collider.gameObject.GetComponent<EnemyController>().KnockbackMe(new Vector2(KnockbackXForce, KnockbackYForce));
                         Ammo--;
@@ -353,10 +356,10 @@ public class Player2 : MonoBehaviour
             rb.velocity += jumpVelocityToAdd;
         }
 
-        if (rb.velocity.y != 0)
-        {
-            //print(rb.velocity.y);
-        }
+        //if (rb.velocity.y != 0)
+        //{
+        //    //print(rb.velocity.y);
+        //}
 
         //animate jumping
         bool isJumping = Mathf.Abs(rb.velocity.y) > 1;
@@ -369,9 +372,10 @@ public class Player2 : MonoBehaviour
         if (CrossPlatformInputManager.GetButtonDown("Duck"))
         {
             //Debug.Log("duck on");
-            speed /= 2;
             //bodyCollider.enabled = false;
             //duckCollider.enabled = true;
+
+            speed /= 2;
             bodyCollider.size = new Vector2(bodyCollider.size.x, bodyCollider.size.y / 2);
             bodyCollider.offset = new Vector2(bodyCollider.offset.x, -0.25f);
             bool isDucking = true;
@@ -380,9 +384,10 @@ public class Player2 : MonoBehaviour
         else if (CrossPlatformInputManager.GetButtonUp("Duck"))
         {
             //Debug.Log("duck off");
-            speed *= 2;
             //bodyCollider.enabled = true;
             //duckCollider.enabled = false;
+
+            speed *= 2;
             bodyCollider.size = new Vector2(bodyCollider.size.x, bodyCollider.size.y * 2);
             bodyCollider.offset = new Vector2(bodyCollider.offset.x, -0.008890361f);
             bool isDucking = false;
@@ -396,6 +401,7 @@ public class Player2 : MonoBehaviour
         {
             if(Jetpack > 0)
             {
+                //AS.PlayOneShot(JetSound);
                 rb.velocity = new Vector2(rb.velocity.x, 250.0f * Time.deltaTime);
                 Jetpack -= Time.deltaTime;
             }

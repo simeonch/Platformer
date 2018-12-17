@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyContainer : MonoBehaviour {
     public int EnemiesLeft;
+    public int EnemiesDown;
 
 	// Use this for initialization
 	void Start () {
@@ -20,6 +21,7 @@ public class EnemyContainer : MonoBehaviour {
         if(EnemiesLeft > 0)
         {
             EnemiesLeft--;
+            EnemiesDown++;
         }
     }
 }
