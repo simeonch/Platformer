@@ -112,13 +112,13 @@ public class Player2 : MonoBehaviour
                 PolymorphAim();
             }
             //cancel casting with the same button
-            if (isCasting && (Input.GetMouseButtonDown(2) || CrossPlatformInputManager.GetButtonDown("Jump")))
+            if (isCasting && (Input.GetMouseButtonDown(2) || Input.GetKeyDown(KeyCode.R) || CrossPlatformInputManager.GetButtonDown("Jump")))
             {
                 StopCasting();
                 return;
             }
             //start casting
-            if (Input.GetMouseButtonDown(2))
+            if (Input.GetMouseButtonDown(2) || Input.GetKeyDown(KeyCode.R))
             {
                 if (rb.velocity.y == 0)
                 {
@@ -439,12 +439,15 @@ public class Player2 : MonoBehaviour
     //when you collide with top of an enemy and ^^ 
     public void Death()
     {
-        isAlive = false;
-        PolymorphAimObject.SetActive(false);
-        PlayerAimObject.SetActive(false);
-        animator.SetTrigger("Die");
-        rb.velocity = deathKick;
-        transform.position = DeathPoint.position;
+        if (isAlive)
+        {
+            isAlive = false;
+            PolymorphAimObject.SetActive(false);
+            PlayerAimObject.SetActive(false);
+            animator.SetTrigger("Die");
+            rb.velocity = deathKick;
+            transform.position = DeathPoint.position;
+        }
     }
 
     private void FlipSprite()
