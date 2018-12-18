@@ -9,8 +9,6 @@ public class Level2Manager : MonoBehaviour {
     public EnemyContainer Enemies;
     public float levelTime;
 
-    //private bool GameWon = false;
-
     public float bronzeTimeLeft;
     public float silverTimeLeft;
     public float goldTimeLeft;
@@ -38,7 +36,7 @@ public class Level2Manager : MonoBehaviour {
 
         LevelTimer = transform.GetChild(3).GetComponent<Text>();
 
-        levelTime = 14.0f;
+        //levelTime = 62.0f;
 	}
 	
     //rework
@@ -72,50 +70,22 @@ public class Level2Manager : MonoBehaviour {
         }
         else if (Player.isAlive)
         {
-            Debug.Log("Game won");
+            string res;
+            if (levelTime >= goldTimeLeft)
+            {
+                res = "Gold";
+            }
+            else if (levelTime >= silverTimeLeft)
+            {
+                res = "Silver";
+            }
+            else
+            {
+                res = "Bronze";
+            }
+            Debug.Log("Game won with " + res + ", " + levelTime);
+
             SceneManager.LoadScene("Success Menu", LoadSceneMode.Single);
-            //float margin;
-            //if(levelTime <= silverTimeLeft)
-            //{
-            //    margin = levelTime - silverTimeLeft;
-            //    if(levelTime < bronzeTimeLeft)
-            //    {
-            //        Debug.Log("bronze");
-            //    }
-
-            //    //closer to:
-            //    float marginup = levelTime - bronzeTimeLeft;
-            //    if (margin < marginup)
-            //    {
-            //        Debug.Log("silver");
-            //    }
-            //    else
-            //    {
-            //        Debug.Log("bronze");
-            //    }
-
-            //}
-            //else
-            //{
-            //    margin = levelTime - silverTimeLeft;
-
-            //    if(levelTime >= goldTimeLeft)
-            //    {
-            //        Debug.Log("gold");
-            //    }
-
-            //    //closer to:
-            //    float marginup = levelTime - goldTimeLeft;
-            //    if(margin < marginup)
-            //    {
-            //        Debug.Log("gold");
-            //    }
-            //    else
-            //    {
-            //        Debug.Log("silver");
-            //    }
-
-            //}
         }
 	}
 

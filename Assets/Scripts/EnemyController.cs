@@ -22,7 +22,7 @@ public class EnemyController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        //if(dead)
+        //if (dead)
         //{
         //    return;
         //}
@@ -68,7 +68,6 @@ public class EnemyController : MonoBehaviour {
     {
         //compare tag
         //only turn around if enemy isnt knockbacked, trigger exit is not a weapon, player or the player detection radius + polymorph aim (finish)
-        Debug.Log("Exit");
         if (!knockbacked && collision.tag != "weapon" && collision.tag != "Player" && collision.tag != "Finish" && collision.tag != "enemy")
         {
             ChangeDir();
@@ -88,10 +87,14 @@ public class EnemyController : MonoBehaviour {
             //Debug.Log(gameObject.name + " died.");
             dead = true;
             transform.position = point.transform.position;
+            rb.velocity = Vector2.zero;
             transform.GetChild(1).gameObject.SetActive(false);
             transform.GetChild(2).gameObject.SetActive(false);
-            transform.parent.GetComponent<EnemyContainer>().EnemyKilled();
 
+            if (!GetComponent<Enemy2>().PermaPoly)
+            {
+                transform.parent.GetComponent<EnemyContainer>().EnemyKilled();
+            }
 
             //rb.velocity = Vector2.zero;
             //Animator anim = GetComponent<Animator>();

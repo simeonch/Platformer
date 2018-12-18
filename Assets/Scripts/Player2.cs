@@ -35,6 +35,8 @@ public class Player2 : MonoBehaviour
     public AudioClip BeamSound;
     public AudioClip BlastSound;
     public AudioClip JetSound;
+    public AudioClip StunSound;
+    public AudioSource AS;
 
     public Transform DeathPoint;
 
@@ -61,6 +63,7 @@ public class Player2 : MonoBehaviour
 
         bodyCollider = GetComponent<CapsuleCollider2D>();
 
+        AS = GetComponent<AudioSource>();
         //feet = GetComponent<BoxCollider2D>();
         //duckCollider = GetComponent<CircleCollider2D>();
         //bodyCollider = GetComponent<PolygonCollider2D>();
@@ -89,6 +92,8 @@ public class Player2 : MonoBehaviour
         //StunTime = 3.0f;
         StunTime = StunDuration;
         rb.velocity = Vector2.zero;
+
+        AS.PlayOneShot(StunSound);
     }
 
     // Update is called once per frame
@@ -207,7 +212,7 @@ public class Player2 : MonoBehaviour
                 {
                     if(cols[i].tag == "enemy")
                     {
-                        Debug.Log("Polymorph hit: " + cols[i].name);
+                        //Debug.Log("Polymorph hit: " + cols[i].name);
                         cols[i].gameObject.GetComponent<Enemy2>().PolymorphMe();
                         break;
                     }
@@ -251,9 +256,14 @@ public class Player2 : MonoBehaviour
             RaycastHit2D beamHit = RayCastAtTarget(10.0f, LayerMask.GetMask("Enemy", "Ground"));
             if (beamHit.collider != null)
             {
+
                 //animator.SetBool("isShooting", true);
                 if (beamHit.collider.tag == "enemy")
                 {
+                    if (!AS.isPlaying)
+                    {
+                        AS.PlayOneShot(BeamSound);
+                    }
                     animator.SetBool("isBeaming", true);
                     beamHit.collider.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
@@ -281,6 +291,8 @@ public class Player2 : MonoBehaviour
             //animator.SetBool("isShooting", false);
             animator.SetBool("isBeaming", false);
 
+            AS.Stop();
+
             //AudioSource.stop
         }
     }
@@ -295,8 +307,8 @@ public class Player2 : MonoBehaviour
                 if(Vector2.Distance(transform.position, knockHit.point) < 2f)
                 {
                     animator.SetBool("isShooting", true);
+                    AS.PlayOneShot(BlastSound);
                     //Debug.DrawLine(transform.position, knockHit.point, Color.red);
-                    //AS.PlayOneShot(BlastSound);
 
                     //knockback to right or left
                     if (transform.position.x < knockHit.point.x)
@@ -401,10 +413,18 @@ public class Player2 : MonoBehaviour
         {
             if(Jetpack > 0)
             {
-                //AS.PlayOneShot(JetSound);
+                if (!AS.isPlaying)
+                {
+                    Debug.Log("Play");
+                    AS.PlayOneShot(JetSound);
+                }
                 rb.velocity = new Vector2(rb.velocity.x, 250.0f * Time.deltaTime);
                 Jetpack -= Time.deltaTime;
             }
+        }
+        if(Input.GetKeyUp(KeyCode.Q))
+        {
+            AS.Stop();
         }
     }
 
